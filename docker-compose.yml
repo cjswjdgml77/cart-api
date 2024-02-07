@@ -10,4 +10,4 @@ services:
       - .:/app
 
   redis:
-    image: "redis:alpine"
+    image: "redis/redis-stack-server:latest"
