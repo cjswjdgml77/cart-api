@@ -4,7 +4,7 @@ import session from "express-session";
 import bodyParser from "body-parser";
 import { v4 as uuidv4 } from "uuid";
 import routerRegister from "./service/routerRegister";
-
+import cors from "cors";
 declare module "express-session" {
   export interface SessionData {
     user: {
@@ -33,6 +33,7 @@ app.use(
 
 // create application/json parser
 const jsonParser = bodyParser.json();
+app.use(cors());
 app.use(jsonParser);
 
 app.get("/", async (req, res) => {
@@ -42,12 +43,14 @@ app.get("/", async (req, res) => {
       cart: [],
     };
     try {
-      await redis.createCart(req.sessionID);
+      const data = await redis.createCart(req.sessionID);
+      res.status(200).send(req.sessionID);
     } catch (e) {
       res.status(500).send("Internal Server Error");
     }
+  } else {
+    res.status(200).send(req.sessionID);
   }
-  res.status(200).send("Created successfully");
 });
 
 routerRegister(app);
