@@ -1,4 +1,4 @@
-import { RedisClientType, createClient } from "redis";
+import { RedisClientType, SchemaFieldTypes, createClient } from "redis";
 
 class Redis {
   private client: ReturnType<typeof createClient>;
@@ -10,13 +10,18 @@ class Redis {
       await client.connect();
     })();
   }
-  async set() {
-    await this.client.set("hel", "hello");
+  async createCart(sessionId: string) {
+    await this.client.json.set(sessionId, "$", {
+      cart: [],
+    });
   }
-  async get() {
-    const data = await this.client.get("hel");
-    console.log(data, "data");
+  async getAllCart(sessionId: string) {
+    const data = await this.client.json.get(sessionId);
     return data;
+  }
+
+  async addToCart(sessionId: string, cart: any) {
+    await this.client.json.arrAppend(sessionId, "cart", cart);
   }
 }
 
